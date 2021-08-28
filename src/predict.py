@@ -5,11 +5,11 @@ import argparse
 import stanza
 
 from pytorch_transformers import BertTokenizer
-from src.others.logging import logger, init_logger
-from src.models.model_builder import AbsSummarizer
-from src.models.predictor import build_predictor
-from src.models.data_loader import Batch
-from src.prepro.data_builder import BertData
+from others.logging import logger, init_logger
+from models.model_builder import AbsSummarizer
+from models.predictor import build_predictor
+from models.data_loader import Batch
+from prepro.data_builder import BertData
 
 stanza.download('en')
 
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     parser.add_argument("-encoder", default='bert', type=str, choices=['bert', 'baseline'])
     parser.add_argument("-mode", default='test', type=str, choices=['train', 'validate', 'test'])
     parser.add_argument("-data_path", default='../samples/sample_1.txt')
-    parser.add_argument("-test_from", default='../models/bertsumextabs_cnndm_final_model/model_step_148000.pt')
+    parser.add_argument("-test_from", default='./models/bertsumextabs_cnndm_final_model/model_step_148000.pt')
     parser.add_argument("-model_path", default='../models/bertsumextabs_cnndm_final_model/')
     parser.add_argument("-result_path", default='../results/cnndm')
     parser.add_argument("-temp_dir", default='./temp')
