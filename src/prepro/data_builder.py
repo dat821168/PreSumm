@@ -1,13 +1,13 @@
 import gc
 import glob
 import hashlib
-import itertools
+
 import json
 import os
-import random
+
 import re
 import subprocess
-from collections import Counter
+
 from os.path import join as pjoin
 
 import torch
@@ -15,7 +15,6 @@ from multiprocess import Pool
 
 from others.logging import logger
 from others.tokenization import BertTokenizer
-from pytorch_transformers import XLNetTokenizer
 
 from others.utils import clean
 from prepro.utils import _get_word_ngrams
@@ -28,7 +27,6 @@ nyt_remove_words = ["photo", "graph", "chart", "map", "table", "drawing"]
 def recover_from_corenlp(s):
     s = re.sub(r' \'{\w}', '\'\g<1>', s)
     s = re.sub(r'\'\' {\w}', '\'\'\g<1>', s)
-
 
 
 def load_json(p, lower):
@@ -221,7 +219,7 @@ class BertData():
 
     def preprocess(self, src, tgt, sent_labels, use_bert_basic_tokenizer=False, is_test=False):
 
-        if ((not is_test) and len(src) == 0):
+        if (not is_test) and len(src) == 0:
             return None
 
         original_src_txt = [' '.join(s) for s in src]
@@ -237,7 +235,7 @@ class BertData():
         src = src[:self.args.max_src_nsents]
         sent_labels = sent_labels[:self.args.max_src_nsents]
 
-        if ((not is_test) and len(src) < self.args.min_src_nsents):
+        if (not is_test) and len(src) < self.args.min_src_nsents:
             return None
 
         src_txt = [' '.join(sent) for sent in src]
@@ -261,7 +259,7 @@ class BertData():
         tgt_subtokens_str = '[unused0] ' + ' [unused2] '.join(
             [' '.join(self.tokenizer.tokenize(' '.join(tt), use_bert_basic_tokenizer=use_bert_basic_tokenizer)) for tt in tgt]) + ' [unused1]'
         tgt_subtoken = tgt_subtokens_str.split()[:self.args.max_tgt_ntokens]
-        if ((not is_test) and len(tgt_subtoken) < self.args.min_tgt_ntokens):
+        if (not is_test) and len(tgt_subtoken) < self.args.min_tgt_ntokens:
             return None
 
         tgt_subtoken_idxs = self.tokenizer.convert_tokens_to_ids(tgt_subtoken)

@@ -8,10 +8,9 @@ import torch
 from others.logging import logger
 
 
-
 class Batch(object):
     def _pad(self, data, pad_id, width=-1):
-        if (width == -1):
+        if width == -1:
             width = max(len(d) for d in data)
         rtn_data = [d + [pad_id] * (width - len(d)) for d in data]
         return rtn_data
@@ -30,25 +29,22 @@ class Batch(object):
             tgt = torch.tensor(self._pad(pre_tgt, 0))
 
             segs = torch.tensor(self._pad(pre_segs, 0))
-            mask_src = 1 - (src == 0)
-            mask_tgt = 1 - (tgt == 0)
-
+            mask_src = 1 - (src == 0).type(torch.uint8)
+            mask_tgt = 1 - (tgt == 0).type(torch.uint8)
 
             clss = torch.tensor(self._pad(pre_clss, -1))
             src_sent_labels = torch.tensor(self._pad(pre_src_sent_labels, 0))
-            mask_cls = 1 - (clss == -1)
+            mask_cls = 1 - (clss == -1).type(torch.uint8)
             clss[clss == -1] = 0
             setattr(self, 'clss', clss.to(device))
             setattr(self, 'mask_cls', mask_cls.to(device))
             setattr(self, 'src_sent_labels', src_sent_labels.to(device))
-
 
             setattr(self, 'src', src.to(device))
             setattr(self, 'tgt', tgt.to(device))
             setattr(self, 'segs', segs.to(device))
             setattr(self, 'mask_src', mask_src.to(device))
             setattr(self, 'mask_tgt', mask_tgt.to(device))
-
 
             if (is_test):
                 src_str = [x[-2] for x in data]
@@ -58,8 +54,6 @@ class Batch(object):
 
     def __len__(self):
         return self.batch_size
-
-
 
 
 def load_dataset(args, corpus_type, shuffle):
@@ -110,7 +104,7 @@ def abs_batch_size_fn(new, count):
 
 
 def ext_batch_size_fn(new, count):
-    if (len(new) == 4):
+    if len(new) == 4:
         pass
     src, labels = new[0], new[4]
     global max_n_sents, max_n_tokens, max_size
@@ -142,7 +136,6 @@ class Dataloader(object):
             for batch in self.cur_iter:
                 yield batch
             self.cur_iter = self._next_dataset_iterator(dataset_iter)
-
 
     def _next_dataset_iterator(self, dataset_iter):
         try:
@@ -185,11 +178,6 @@ class DataIterator(object):
         xs = self.dataset
         return xs
 
-
-
-
-
-
     def preprocess(self, ex, is_test):
         src = ex['src']
         tgt = ex['tgt'][:self.args.max_tgt_len][:-1]+[2]
@@ -208,8 +196,6 @@ class DataIterator(object):
         src_sent_labels = src_sent_labels[:max_sent_id]
         clss = clss[:max_sent_id]
         # src_txt = src_txt[:max_sent_id]
-
-
 
         if(is_test):
             return src, tgt, segs, clss, src_sent_labels, src_txt, tgt_txt
