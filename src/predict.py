@@ -164,4 +164,5 @@ if __name__ == "__main__":
     with open(args.data_path, "r") as f:
         full_text = f.read()
         f.close()
+    print("================Summary result================\n")
     print(translator.translate([full_text])[0])
